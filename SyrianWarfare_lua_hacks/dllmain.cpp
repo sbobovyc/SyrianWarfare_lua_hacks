@@ -4,7 +4,8 @@
 #include <iostream>
 #include <string.h>
 #include <strsafe.h>
-#include <unordered_set>  
+#include <unordered_set>
+#include <map>
 extern "C" {
 #include <lua.h>
 #include <lauxlib.h>
@@ -172,61 +173,33 @@ DWORD WINAPI MyThread(LPVOID) {
 
 	wsprintf(debug_string, L"Lua module at 0x%p", hLua);
 	OutputDebugString(debug_string);
-	
-	Lua::lua_open = (game_lua_open)GetProcAddress(hLua, "lua_open");
-	wsprintf(debug_string, L"lua_open at 0x%p", Lua::lua_open);
-	OutputDebugString(debug_string);
-	Lua::lua_close = (game_lua_close)GetProcAddress(hLua, "lua_close");
-	wsprintf(debug_string, L"lua_close at 0x%p", Lua::lua_close);
-	OutputDebugString(debug_string);
-	Lua::luaopen_io = (game_luaopen_io)GetProcAddress(hLua, "luaopen_io");
-	wsprintf(debug_string, L"luaopen_io at 0x%p", Lua::luaopen_io);
-	OutputDebugString(debug_string);
-	Lua::lua_dostring = (game_lua_dostring)GetProcAddress(hLua, "lua_dostring");
-	wsprintf(debug_string, L"lua_dostring at 0x%p", Lua::lua_dostring);
-	OutputDebugString(debug_string);
-	Lua::lua_dofile = (game_lua_dofile)GetProcAddress(hLua, "lua_dofile");
-	wsprintf(debug_string, L"lua_dofile at 0x%p", Lua::lua_dofile);
-	OutputDebugString(debug_string);
-	
-	Lua::lua_gettop = (game_lua_gettop)GetProcAddress(hLua, "lua_gettop");
-	wsprintf(debug_string, L"lua_gettop at 0x%p", Lua::lua_gettop);
-	OutputDebugString(debug_string);
-	Lua::lua_tostring = (game_lua_tostring)GetProcAddress(hLua, "lua_tostring");
-	wsprintf(debug_string, L"lua_tostring at 0x%p", Lua::lua_tostring);
-	OutputDebugString(debug_string);	
-	Lua::lua_settop = (game_lua_settop)GetProcAddress(hLua, "lua_settop");
-	wsprintf(debug_string, L"lua_pop at 0x%p", Lua::lua_settop);
-	OutputDebugString(debug_string);	
-	Lua::lua_next = (game_lua_next)GetProcAddress(hLua, "lua_next");
-	wsprintf(debug_string, L"lua_next at 0x%p", Lua::lua_next);
-	OutputDebugString(debug_string);
-	Lua::lua_tonumber = (game_lua_tonumber)GetProcAddress(hLua, "lua_tonumber");
-	wsprintf(debug_string, L"lua_tonumber at 0x%p", Lua::lua_tonumber);
-	OutputDebugString(debug_string);
-	Lua::lua_topointer = (game_lua_topointer)GetProcAddress(hLua, "lua_topointer");
-	wsprintf(debug_string, L"lua_topointer at 0x%p", Lua::lua_topointer);
-	OutputDebugString(debug_string);
-	Lua::lua_pushstring = (game_lua_pushstring)GetProcAddress(hLua, "lua_pushstring");
-	wsprintf(debug_string, L"lua_pushstring at 0x%p", Lua::lua_pushstring);
-	OutputDebugString(debug_string);
-	Lua::lua_gettable = (game_lua_gettable)GetProcAddress(hLua, "lua_gettable");
-	wsprintf(debug_string, L"lua_gettable at 0x%p", Lua::lua_gettable);
-	OutputDebugString(debug_string);
-	Lua::lua_pushnil = (game_lua_pushnil)GetProcAddress(hLua, "lua_pushnil");
-	wsprintf(debug_string, L"lua_pushnil at 0x%p", Lua::lua_pushnil);
-	OutputDebugString(debug_string);
-	
-	Lua::lua_isstring = (game_lua_isstring)GetProcAddress(hLua, "lua_isstring");
-	wsprintf(debug_string, L"lua_isstring at 0x%p", Lua::lua_isstring);
-	OutputDebugString(debug_string);
-	Lua::lua_isnumber = (game_lua_isnumber)GetProcAddress(hLua, "lua_isnumber");
-	wsprintf(debug_string, L"lua_isnumber at 0x%p", Lua::lua_isnumber);
-	OutputDebugString(debug_string);
-	Lua::lua_type = (game_lua_type)GetProcAddress(hLua, "lua_type");
-	wsprintf(debug_string, L"lua_type at 0x%p", Lua::lua_type);
-	OutputDebugString(debug_string);
-	
+
+	std::map<std::string, void *> functionMap;
+	functionMap.insert(std::pair<std::string, void *>("lua_open", &Lua::lua_open));
+	functionMap.insert(std::pair<std::string, void *>("lua_close", &Lua::lua_close));
+	functionMap.insert(std::pair<std::string, void *>("luaopen_io", &Lua::luaopen_io));
+	functionMap.insert(std::pair<std::string, void *>("lua_dostring", &Lua::lua_dostring));
+	functionMap.insert(std::pair<std::string, void *>("lua_dofile", &Lua::lua_dofile));
+	functionMap.insert(std::pair<std::string, void *>("lua_gettop", &Lua::lua_gettop));
+	functionMap.insert(std::pair<std::string, void *>("lua_tostring", &Lua::lua_tostring));
+	functionMap.insert(std::pair<std::string, void *>("lua_settop", &Lua::lua_settop));
+	functionMap.insert(std::pair<std::string, void *>("lua_next", &Lua::lua_next));
+	functionMap.insert(std::pair<std::string, void *>("lua_tonumber", &Lua::lua_tonumber));
+	functionMap.insert(std::pair<std::string, void *>("lua_topointer", &Lua::lua_topointer));
+	functionMap.insert(std::pair<std::string, void *>("lua_pushstring", &Lua::lua_pushstring));
+	functionMap.insert(std::pair<std::string, void *>("lua_gettable", &Lua::lua_gettable));
+	functionMap.insert(std::pair<std::string, void *>("lua_pushnil", &Lua::lua_pushnil));
+	functionMap.insert(std::pair<std::string, void *>("lua_isstring", &Lua::lua_isstring));
+	functionMap.insert(std::pair<std::string, void *>("lua_isnumber", &Lua::lua_isnumber));
+	functionMap.insert(std::pair<std::string, void *>("lua_type", &Lua::lua_type));
+
+	for (auto& kv: functionMap) {
+		FARPROC tmp = GetProcAddress(hLua, kv.first.c_str());
+		memcpy(kv.second, &tmp, sizeof(FARPROC));
+		wsprintf(debug_string, L"%s at 0x%p", std::wstring(kv.first.begin(), kv.first.end()).c_str(), tmp);
+		OutputDebugString(debug_string);
+	}
+
 	// Initialize MinHook.
 	if (MH_Initialize() != MH_OK)
 	{
