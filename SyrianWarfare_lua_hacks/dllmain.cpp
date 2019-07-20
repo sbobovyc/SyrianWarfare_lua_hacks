@@ -307,6 +307,13 @@ DWORD WINAPI MyThread(LPVOID) {
 		}
 		if (GetAsyncKeyState(VK_F7) & 1)
 		{
+			if (game_L == NULL && lua_States.size() != 0) {
+				game_L = *lua_States.begin();
+			}
+			if (game_L == NULL) {
+				OutputDebugString(_T("No valid lua_State found"));
+				continue;
+			}
 			auto current_state = lua_States.find(game_L);
 			auto end_state = lua_States.end();
 			wsprintf(debug_string, _T("Current game_L is lua_State 0x%p"), *current_state);
